@@ -1,0 +1,102 @@
+version: '3'
+services:
+#  web:
+#    image: harbor.util.carlton.ca/p2m-dev/p2m-dev-docker-web
+#    hostname: p2m-dev-web
+#    container_name: p2m-dev-web
+#    restart: "no"
+#    networks:
+#      - p2m_dev
+#    depends_on:
+#      - memcached
+#    volumes:
+#      - ../../:/var/www/imsapps/p2m
+#      - ../../../silo:/var/ims3
+#      - ../../../ims:/var/ims
+#    working_dir: /var/www/imsapps/p2m
+#    entrypoint:
+#      - /bin/sh
+#      - -c
+#      - |
+#        /startup.bash
+#
+#  proxy:
+#    image: harbor.util.carlton.ca/p2m-dev/p2m-dev-docker-proxy
+#    container_name: p2m-dev-proxy
+#    restart: "no"
+#    ports:
+#      - "80:80"
+#      - "443:443"
+#    networks:
+#      - p2m_dev
+#    depends_on:
+#      - web
+#      - node
+
+  node:
+    image: ipublicin/node
+    container_name: ipublic-node
+    restart: "no"
+    ports:
+      - "3000:3000"
+      - "8080:8080"
+      - "8090:8090"
+      - "9229:9229"
+    networks:
+      - ipublic_dev
+    volumes:
+      - ../front:/var/ipublic/front
+      - ../api:/var/ipublic/api
+    working_dir: /var/ipublic/api
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        node server.js
+
+#  memcached:
+#    image: harbor.util.carlton.ca/p2m-dev/p2m-dev-docker-memcached
+#    container_name: p2m-dev-memcached
+#    restart: "no"
+#    networks:
+#      - p2m_dev
+
+  db:
+    image: ipublicin/mysql
+    container_name: ipublic-mysql
+    restart: "no"
+    volumes:
+      - ./db:/var/ipublic/db
+    networks:
+      - ipublic_dev
+    ports:
+      - "3306:3306"
+    environment:
+      - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
+      - "APP_DB_NAME=${APP_DB_NAME}"
+      - "APP_DB_USER=${APP_DB_USER}"
+      - "APP_DB_PASSWORD=${APP_DB_PASSWORD}"
+    working_dir: /var/ipublic/db
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        ./startup.bash
+
+#  rabbitmq:
+#    image: harbor.util.carlton.ca/p2m-dev/p2m-dev-docker-rabbitmq
+#    hostname: p2m-dev-docker-rabbitmq
+#    container_name: p2m-dev-rabbitmq
+#    restart: "no"
+#    networks:
+#      - p2m_dev
+#    ports:
+#      - "15672:15672"
+
+networks:
+  ipublic_dev:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.135.0.0/16
