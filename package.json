@@ -1,0 +1,29 @@
+{
+  "name": "infra",
+  "version": "1.0.0",
+  "description": "Infra package for ipublic",
+  "main": "ecosystem.config.js",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.17.1",
+    "mysql2": "^3.2.0",
+    "pm2": "^5.1.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ipublic-in/infra.git"
+  },
+  "keywords": [
+    "infra"
+  ],
+  "author": "Sandeep Kumar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ipublic-in/infra/issues"
+  },
+  "homepage": "https://github.com/ipublic-in/infra#readme"
+}

@@ -1,0 +1,81 @@
+## Author: Sandeep Kumar (skumar@owera.ca)
+
+version: '3.7'
+services:
+
+    php:
+        image: php:fpm-alpine
+        container_name: "${PROJECT_NAME}_php"
+        depends_on:
+            - redis
+        volumes:
+            - ../poll:/var/www/poll
+        ports:
+            - "9000:9000"
+            - "9001:9001"
+        networks:
+            - overlay
+
+    nginx:
+        image: nginx:latest
+        container_name: "${PROJECT_NAME}_nginx"
+        depends_on: 
+            - node
+            - redis
+        volumes:
+            - ./nginx:/etc/nginx/conf.d
+        ports:
+            - "80:80"
+        networks: 
+            - overlay
+
+    redis:
+        image: redis:latest
+        container_name: "${PROJECT_NAME}_redis"
+        restart: always
+        ports:
+            - '6379:6379'
+        command: "redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD}"
+        volumes:
+            - redis_data_container:/data
+    
+    node:
+        image: node:16
+        container_name: "${PROJECT_NAME}_node"
+        volumes: 
+            - ../spa:/home/${PROJECT_NAME}/spa
+            - ../api:/home/${PROJECT_NAME}/api
+            - ../infra:/home/${PROJECT_NAME}/infra
+            - ./pm2_logs:/root/.pm2/logs
+        working_dir: /home/${PROJECT_NAME}/infra
+        #command: bash -c "npm install pm2 -g && pm2-runtime ecosystem.config.js"
+        command: bash -c "tail -f /home/${PROJECT_NAME}/api/package.json"
+        ports:
+            - "4000:4000"
+            - "4081:4001"
+        networks:
+            - overlay
+
+    mysql:
+        image: mysql:8
+        container_name: "${PROJECT_NAME}_mysql"
+        volumes:
+            - mysql_data_container:/var/lib/mysql
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+            MYSQL_DATABASE: "${MYSQL_DATABASE}"
+            MYSQL_USER: "${MYSQL_USER}"
+            MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+        ports:
+            - 3306:3306
+        networks:
+            - overlay
+
+volumes:
+    mysql_data_container:
+    redis_data_container:
+
+
+networks: 
+    overlay:
