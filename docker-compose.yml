@@ -3,13 +3,19 @@
 version: '3.7'
 services:
 
-    php:
+    php-fpm:
         image: php:fpm-alpine
         container_name: "${PROJECT_NAME}_php"
+        command:
+            - /bin/sh
+            - -c
+            - |
+                echo "baeldung"
+                echo "docker"
         depends_on:
             - redis
         volumes:
-            - ../poll:/var/www/poll
+            - ../poll:/usr/share/nginx/html/poll
         ports:
             - "9000:9000"
             - "9001:9001"
