@@ -3,8 +3,8 @@
 version: '3.7'
 services:
 
-    php-fpm:
-        image: php:fpm-alpine
+    web:
+        image: ipublicin/lap
         container_name: "${PROJECT_NAME}_php"
         command:
             - /bin/sh
@@ -15,10 +15,10 @@ services:
         depends_on:
             - redis
         volumes:
-            - ../poll:/usr/share/nginx/html/poll
+            - ../poll:/var/www/html
         ports:
             - "9000:9000"
-            - "9001:9001"
+            - "8080:8080"
         networks:
             - overlay
 
