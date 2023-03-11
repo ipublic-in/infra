@@ -5,13 +5,7 @@ services:
 
     web:
         image: ipublicin/lap
-        container_name: "${PROJECT_NAME}_php"
-        command:
-            - /bin/sh
-            - -c
-            - |
-                echo "baeldung"
-                echo "docker"
+        container_name: "${PROJECT_NAME}_web"
         depends_on:
             - redis
         volumes:
